@@ -88,10 +88,10 @@ begin
 end
 
 # ╔═╡ e8751abc-c980-4efe-a327-8905394b386e
-function lag_vector(xᵢ_measurements, xⱼ_measurements)
+function lag_vector(xᵢ, xⱼ)
 	N_intervals = maximum((xᵢ, xⱼ))[1] + 1 # Latest time that others will wrap around
-	us = [(xᵢ_measurements .+ i) .% N_intervals for i in 0:N_intervals-1]
-	v = xⱼ_measurements
+	us = [(xᵢ .+ i) .% N_intervals for i in 0:N_intervals-1]
+	v = xⱼ
 	return Base.Iterators.flatten(compute_lags.(us, v)) |> collect
 end
 
