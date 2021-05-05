@@ -52,14 +52,23 @@ If we repeat this for all shifts in a single cycle (including a zero-shift), we 
 \end{align}
 ```
 
-Because order does not matter for this operation, we can accomplish this relatively straightfowardly using modulus arithmetic:
+Because order does not matter for this operation, we can accomplish this relatively straightfowardly using modulus arithmetic.
 """
 
+# ╔═╡ 15ae06e4-7fa3-4ba5-baec-cd76c58db375
+const t₀ = 0.0
+
+# ╔═╡ b8bc122f-e0a4-4c84-a0e2-8b64b3b6ca0f
+const T = 3.0
+
+# ╔═╡ 320037b9-7aa7-42ad-99be-fbcc6cd8e1ac
+const Δt = 0.5
+
 # ╔═╡ 4a98643c-a0fa-40e8-89e8-19fdee5429e0
-xᵢ = [1, 2]
+xᵢ = [1.0, 2.5]
 
 # ╔═╡ f4241a88-e1dc-4a38-b05c-d59f2a1bca5b
-xⱼ = [3]
+xⱼ = [1.5]
 
 # ╔═╡ 1e1d8f53-3e05-4646-9c34-f18e0585d787
 begin
@@ -88,21 +97,22 @@ begin
 end
 
 # ╔═╡ e8751abc-c980-4efe-a327-8905394b386e
-function lag_vector(xᵢ, xⱼ)
-	N_intervals = maximum((xᵢ, xⱼ))[1] + 1 # Latest time that others will wrap around
-	us = [(xᵢ .+ i) .% N_intervals for i in 0:N_intervals-1]
-	v = xⱼ
-	return Base.Iterators.flatten(compute_lags.(us, v)) |> collect
+function lag_vector(xᵢ, xⱼ; ϵ=10.0)
+	us = [(xᵢ .+ t) .% (T + Δt) for t ∈ t₀:Δt:T]
+	return Base.Iterators.flatten(compute_lags.(us, Ref(xⱼ); ϵ=ϵ))
 end
 
 # ╔═╡ 3608d193-1ead-45fb-aad0-8075793c00a5
-lag_vector(xᵢ, xⱼ) |> sort
+lags = lag_vector(xᵢ, xⱼ; ϵ=10.0) |> collect |> sort
 
 # ╔═╡ Cell order:
 # ╟─3fc988b1-803f-4cb4-a8e3-0277c0785e83
+# ╠═15ae06e4-7fa3-4ba5-baec-cd76c58db375
+# ╠═b8bc122f-e0a4-4c84-a0e2-8b64b3b6ca0f
+# ╠═320037b9-7aa7-42ad-99be-fbcc6cd8e1ac
 # ╠═4a98643c-a0fa-40e8-89e8-19fdee5429e0
 # ╠═f4241a88-e1dc-4a38-b05c-d59f2a1bca5b
 # ╠═3608d193-1ead-45fb-aad0-8075793c00a5
-# ╠═1e1d8f53-3e05-4646-9c34-f18e0585d787
 # ╠═e8751abc-c980-4efe-a327-8905394b386e
+# ╠═1e1d8f53-3e05-4646-9c34-f18e0585d787
 # ╠═acc935c2-d23d-4e64-bd84-fb96cd67d1ed
